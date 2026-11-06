@@ -1,0 +1,907 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MLBB Dex</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+    :root {
+      --bg: #10131b;
+      --surface: #191e29;
+      --gold: #e5b85c;
+      --text: #f4f1e9;
+      --muted: #929baa;
+      --border: #30394a;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+    }
+
+    .navbar {
+      background: #171c27;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      color: var(--gold);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-decoration: none;
+    }
+
+    .hero-banner {
+      background: linear-gradient(120deg, #252b39, #151a24);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 35px;
+    }
+
+    .hero-banner h1 {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .section-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 25px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .gold {
+      color: var(--gold);
+    }
+
+    .nav-pills .nav-link {
+      color: var(--muted);
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    .nav-pills .nav-link.active {
+      background: var(--gold);
+      color: #171a21;
+    }
+
+    .form-control::placeholder {
+      color: #ffffff;
+      opacity: 0.85;
+    }
+
+    .form-select,
+    .form-control {
+      background-color: var(--surface);
+      color: #ffffff;
+      border: 1px solid var(--border);
+      color-scheme: dark;
+    }
+
+    .form-select:focus,
+    .form-control:focus {
+      background-color: var(--surface);
+      color: #ffffff;
+      border-color: var(--gold);
+      box-shadow: none;
+    }
+
+    .form-select option {
+      background: var(--surface);
+      color: #ffffff;
+    }
+
+    .card-item {
+      height: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: .2s ease;
+      cursor: pointer;
+    }
+
+    .card-item:hover {
+      transform: translateY(-4px);
+      border-color: var(--gold);
+    }
+
+    .card-image {
+      height: 190px;
+      background: linear-gradient(145deg, #30394a, #171c27);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .card-image img {
+      height: 100%;
+      width: 100%;
+      object-fit: contain;
+      padding: 10px;
+    }
+
+    .card-content {
+      padding: 15px;
+    }
+
+    .card-name {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 23px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .tag {
+      display: inline-block;
+      background: #30394a;
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 20px;
+      margin: 2px;
+      text-transform: uppercase;
+    }
+
+    .page-link {
+      background: var(--surface);
+      color: var(--text);
+      border-color: var(--border);
+      cursor: pointer;
+    }
+
+    .page-link:hover,
+    .page-item.active .page-link {
+      background: var(--gold);
+      color: #171a21;
+      border-color: var(--gold);
+    }
+
+    .page-item.disabled .page-link {
+      background: var(--surface);
+      color: #596273;
+    }
+
+    .loading {
+      color: var(--muted);
+      padding: 60px 0;
+      text-align: center;
+    }
+
+    .footer {
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 576px) {
+      .hero-banner {
+        padding: 24px;
+      }
+
+      .card-image {
+        height: 150px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar sticky-top">
+    <div class="container">
+      <a class="brand" href="index.html">MLBB <span class="text-white">D.E.X.</span></a>
+      <span class="small text-secondary">HERO DATABASE</span>
+    </div>
+  </nav>
+
+  <main class="container py-4">
+
+    <section class="hero-banner mb-4">
+      <p class="gold small fw-bold mb-2">MOBILE LEGENDS: BANG BANG Database</p>
+      <h1>EXPLORE THE LAND OF DAWN.</h1>
+      <p class="text-secondary mb-0">
+        Discover heroes, equipment, spells, emblems, and everything you need to know.
+      </p>
+    </section>
+
+    <section class="mb-4">
+      <ul class="nav nav-pills gap-2 flex-wrap" id="categoryNav">
+        <li class="nav-item">
+          <button class="nav-link active" data-category="heroes">Heroes</button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" data-category="equipment">Equipment</button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" data-category="spells">Spells</button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" data-category="emblems">Emblems</button>
+        </li>
+      </ul>
+    </section>
+
+    <section class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+      <div>
+        <h2 class="section-title mb-0" id="sectionTitle">HERO DATABASE</h2>
+        <small class="text-secondary" id="sectionDescription">
+          Browse all available heroes.
+        </small>
+      </div>
+      <span class="small text-secondary" id="resultCount"></span>
+    </section>
+
+    <section class="row g-2 mb-4" id="filterSection">
+      <div class="col-12 col-md-5" id="searchCol">
+        <input type="search" class="form-control" id="searchInput" placeholder="Search heroes...">
+      </div>
+
+      <div class="col-12 col-md-4" id="roleFilterCol">
+        <select class="form-select" id="roleFilter">
+          <option value="">All Roles</option>
+          <option value="tank">Tank</option>
+          <option value="fighter">Fighter</option>
+          <option value="assassin">Assassin</option>
+          <option value="mage">Mage</option>
+          <option value="marksman">Marksman</option>
+          <option value="support">Support</option>
+        </select>
+      </div>
+
+      <div class="col-12 col-md-4 hidden" id="equipCategoryCol">
+        <select class="form-select" id="equipCategoryFilter">
+          <option value="">All Categories</option>
+        </select>
+      </div>
+
+      <div class="col-12 col-md-3">
+        <select class="form-select" id="sortFilter">
+          <option value="asc">Name: A-Z</option>
+          <option value="desc">Name: Z-A</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="row g-3" id="parent">
+      <div class="col-12 loading">Loading arena data...</div>
+    </section>
+
+    <nav class="mt-4" id="paginationSection">
+      <ul class="pagination justify-content-center" id="pagination"></ul>
+    </nav>
+
+  </main>
+
+  <footer class="footer mt-5 py-4">
+    <div class="container text-center">
+      MLBB Dex · Powered by Rone Arena API
+      <br>
+      <span class="d-inline-block mt-2">
+        Unofficial fan-made project. Not affiliated with Moonton.
+      </span>
+    </div>
+  </footer>
+
+  <script>
+    const API = 'https://arena.rone.dev/api';
+
+    const PER_PAGE = 20;
+    const API_PAGE_SIZE = 100;
+
+    const categories = {
+      heroes: {
+        title: 'HERO DATABASE',
+        description: 'Browse all available heroes.',
+        endpoint: '/heroes'
+      },
+      equipment: {
+        title: 'EQUIPMENT',
+        description: 'Explore available battle equipment.',
+        endpoint: '/academy/equipment/expanded'
+      },
+      spells: {
+        title: 'BATTLE SPELLS',
+        description: 'Explore available battle spells.',
+        endpoint: '/academy/spells'
+      },
+      emblems: {
+        title: 'EMBLEMS',
+        description: 'Explore available emblems.',
+        endpoint: '/academy/emblems'
+      }
+    };
+
+    const urlParams = new URLSearchParams(location.search);
+    const initialCategory = urlParams.get('category');
+
+    let currentCategory = categories[initialCategory] ? initialCategory : 'heroes';
+    let currentPage = Math.max(
+      1,
+      Number(urlParams.get('page')) || 1
+    );
+
+    let currentData = [];
+    let heroPositions = [];
+    let searchTerm = '';
+    let selectedRole = '';
+    let selectedEquipCategory = '';
+    let sortOrder = 'asc';
+    let loading = false;
+
+    const parent = document.getElementById('parent');
+    const pagination = document.getElementById('pagination');
+
+    function syncActiveCategoryTab() {
+      document.querySelectorAll('[data-category]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.category === currentCategory);
+      });
+    }
+
+    function getRecords(response) {
+      return response?.data?.records
+        || response?.data?.list
+        || [];
+    }
+
+    function getData(item) {
+      return item?.data || item;
+    }
+
+    function getHeroName(item) {
+      const data = getData(item);
+
+      return data?.hero?.data?.name
+        || data?.hero?.name
+        || data?.name
+        || 'Unknown Hero';
+    }
+
+    function getHeroId(item) {
+      const data = getData(item);
+      return data?.hero_id || data?.hero?.data?.heroid || data?.id;
+    }
+
+    function getHeroImage(item) {
+      const data = getData(item);
+
+      return data?.hero?.data?.head
+        || data?.head
+        || data?.hero?.data?.smallmap
+        || '';
+    }
+
+    function getHeroRoles(item) {
+      const data = getData(item);
+
+      const roleData = data?.hero?.data?.sortid
+        || data?.hero?.data?.speciality
+        || [];
+
+      if (!Array.isArray(roleData)) return [];
+
+      return roleData.map(role => {
+        if (typeof role === 'string') return role;
+
+        return role?.data?.sort_title
+          || role?.data?.emblem_title
+          || role?.emblem_title
+          || role?.name
+          || '';
+      }).filter(Boolean);
+    }
+
+    function getGenericInfo(item, index = 0) {
+      const data = getData(item);
+
+      if (currentCategory === 'equipment') {
+        return {
+          id: data?.equipid ?? item?.id ?? index,
+          name: data?.equipname || 'Unknown Equipment',
+          image: data?.equipicon || '',
+          category: (data?.equiptypename || 'Equipment').trim(),
+          stats: data?.equiptips || '',
+          description: data?.equipskilldesc || ''
+        };
+      }
+
+      if (currentCategory === 'spells') {
+        const spell = data?.__data || data;
+
+        return {
+          id: spell?.skillid ?? data?.skillid ?? item?.id ?? index,
+          name: spell?.skillname || data?.skillname || 'Unknown Spell',
+          image: spell?.skillicon || data?.skillicon || '',
+          category: 'Battle Spell',
+          description: spell?.skilldesc || spell?.skilldescemblem ||
+            data?.skillshortdesc || ''
+        };
+      }
+
+      if (currentCategory === 'emblems') {
+        const skill = data?.emblemskill?.data || data?.emblemskill || data?.__data || data;
+        const tier = data?.gifttiers ?? skill?.gifttiers ?? 'Other';
+
+        return {
+          id: data?.giftid ?? skill?.skillid ?? data?.id ?? item?.id ?? index,
+          tier,
+          name: skill?.skillname || data?.skillname || data?.name || 'Unknown Emblem Talent',
+          image: skill?.skillicon || data?.skillicon || data?.icon || '',
+          category: tier === 'Other' ? 'Emblem' : `Tier ${tier}`,
+          description: skill?.skilldesc || data?.skilldesc || '',
+          detail: skill?.skilldescemblem || data?.skilldescemblem || '',
+          values: skill?.numdescribe || data?.numdescribe || ''
+        };
+      }
+
+      return {
+        id: data?.id ?? index,
+        name: data?.name || 'Unknown Item',
+        image: data?.icon || '',
+        description: data?.description || ''
+      };
+    }
+
+    function populateEquipmentCategories(items) {
+      const select = document.getElementById('equipCategoryFilter');
+      const uniqueTypes = [...new Set(
+        items
+          .map(item => getGenericInfo(item).category)
+          .filter(Boolean)
+      )].sort((a, b) => a.localeCompare(b));
+
+      select.innerHTML = `
+        <option value="">All Categories</option>
+        ${uniqueTypes.map(type =>
+          `<option value="${escapeHTML(type.toLowerCase())}">${escapeHTML(type)}</option>`
+        ).join('')}
+      `;
+
+      select.value = selectedEquipCategory;
+    }
+
+    function escapeHTML(value) {
+      return String(value ?? '').replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[char]);
+    }
+
+    async function fetchAll(endpoint) {
+      let records = [];
+      let page = 1;
+      let total = Infinity;
+
+      while (records.length < total) {
+        const url = new URL(API + endpoint);
+
+        url.searchParams.set('size', API_PAGE_SIZE);
+        url.searchParams.set('index', page);
+        url.searchParams.set('lang', 'en');
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+          throw new Error(`Request failed: ${endpoint} (${response.status})`);
+        }
+
+        const result = await response.json();
+
+        if (result.code !== undefined && result.code !== 0) {
+          throw new Error(result.message || 'API error');
+        }
+
+        const pageRecords = getRecords(result);
+
+        if (page === 1) {
+          total = result?.data?.total ?? pageRecords.length;
+        }
+
+        if (!pageRecords.length) break;
+
+        records.push(...pageRecords);
+
+        if (pageRecords.length < API_PAGE_SIZE) break;
+
+        page++;
+      }
+
+      return records;
+    }
+
+    async function loadHeroPositions() {
+      heroPositions = await fetchAll('/heroes/positions');
+    }
+
+    async function fetchData() {
+      if (loading) return;
+      loading = true;
+
+      syncActiveCategoryTab();
+
+      parent.innerHTML =
+        '<div class="col-12 loading">Loading arena data...</div>';
+
+      pagination.innerHTML = '';
+
+      const category = categories[currentCategory];
+
+      document.getElementById('sectionTitle').textContent = category.title;
+      document.getElementById('sectionDescription').textContent =
+        category.description;
+
+      const isHeroes = currentCategory === 'heroes';
+      const isEquipment = currentCategory === 'equipment';
+      const hasSecondaryFilter = isHeroes || isEquipment;
+
+      document.getElementById('roleFilterCol').classList.toggle('hidden', !isHeroes);
+      document.getElementById('equipCategoryCol').classList.toggle('hidden', !isEquipment);
+      document.getElementById('searchCol').className = hasSecondaryFilter ? 'col-12 col-md-5' : 'col-12 col-md-9';
+      document.getElementById('searchInput').placeholder = `Search ${currentCategory}...`;
+
+      try {
+        currentData = await fetchAll(category.endpoint);
+
+        if (isHeroes) {
+          await loadHeroPositions();
+
+          const positionMap = new Map(
+            heroPositions.map(item => [
+              String(getHeroId(item)),
+              item
+            ])
+          );
+
+          currentData = currentData.map(item => {
+            const position = positionMap.get(String(getHeroId(item)));
+
+            return {
+              ...item,
+              positionData: position ? getData(position) : null
+            };
+          });
+        }
+
+        if (isEquipment) {
+          populateEquipmentCategories(currentData);
+        }
+
+        renderData();
+
+      } catch (error) {
+        parent.innerHTML = `
+          <div class="col-12 text-center py-5">
+            <h5 class="gold">Unable to load data</h5>
+            <p class="text-secondary">${escapeHTML(error.message)}</p>
+            <button class="btn btn-outline-warning" onclick="fetchData()">
+              Try Again
+            </button>
+          </div>
+        `;
+      } finally {
+        loading = false;
+      }
+    }
+
+    function getSortedData() {
+      let filtered = [...currentData];
+
+      if (currentCategory === 'heroes') {
+        filtered = filtered.filter(item =>
+          getHeroName(item).toLowerCase().includes(searchTerm)
+        );
+
+        if (selectedRole) {
+          filtered = filtered.filter(item => {
+            const roles = getHeroRoles({
+              data: item.positionData
+            });
+
+            return roles.some(role =>
+              role.toLowerCase() === selectedRole
+            );
+          });
+        }
+      } else {
+        filtered = filtered.filter((item, idx) => {
+          const info = getGenericInfo(item, idx);
+          const matchesSearch = info.name.toLowerCase().includes(searchTerm);
+
+          if (currentCategory === 'equipment' && selectedEquipCategory) {
+            return matchesSearch && info.category.toLowerCase() === selectedEquipCategory;
+          }
+
+          return matchesSearch;
+        });
+      }
+
+      filtered.sort((a, b) => {
+        if (currentCategory === 'emblems') {
+          const tierA = Number(getData(a)?.gifttiers) || 999;
+          const tierB = Number(getData(b)?.gifttiers) || 999;
+
+          if (tierA !== tierB) {
+            return tierA - tierB;
+          }
+        }
+
+        const nameA = currentCategory === 'heroes'
+          ? getHeroName(a)
+          : getGenericInfo(a).name;
+
+        const nameB = currentCategory === 'heroes'
+          ? getHeroName(b)
+          : getGenericInfo(b).name;
+
+        const comparison = nameA.localeCompare(nameB);
+        return sortOrder === 'desc' ? -comparison : comparison;
+      });
+
+      return filtered;
+    }
+
+    function renderData() {
+      const sortedData = getSortedData();
+
+      const total = sortedData.length;
+      const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
+
+      currentPage = Math.min(currentPage, totalPages);
+
+      const start = (currentPage - 1) * PER_PAGE;
+      const pageData = sortedData.slice(start, start + PER_PAGE);
+
+      document.getElementById('resultCount').textContent =
+        `${total} results`;
+
+      if (!pageData.length) {
+        parent.innerHTML = `
+          <div class="col-12 text-center loading">
+            No results found.
+          </div>
+        `;
+        pagination.innerHTML = '';
+        return;
+      }
+
+      if (currentCategory === 'emblems') {
+        parent.innerHTML = renderEmblemGroups(pageData, start);
+      } else {
+        parent.innerHTML = pageData.map((item, idx) =>
+          currentCategory === 'heroes'
+            ? renderHero(item)
+            : renderGeneric(item, start + idx)
+        ).join('');
+      }
+
+      renderPagination(totalPages);
+    }
+
+    function renderHero(item) {
+      const name = getHeroName(item);
+      const id = getHeroId(item);
+      const image = getHeroImage(item);
+
+      const roles = getHeroRoles({
+        data: item.positionData
+      });
+
+      return `
+        <div class="col-6 col-md-4 col-lg-3">
+          <div class="card-item"
+            onclick="openItem('heroes', '${encodeURIComponent(id)}')">
+
+            <div class="card-image">
+              ${image
+          ? `<img src="${escapeHTML(image)}"
+                    alt="${escapeHTML(name)}"
+                    loading="lazy">`
+          : `<span class="text-secondary small">No image</span>`
+        }
+            </div>
+
+            <div class="card-content">
+              <div class="card-name">${escapeHTML(name)}</div>
+
+              <div>
+                ${roles.length
+          ? roles.map(role =>
+            `<span class="tag">${escapeHTML(role)}</span>`
+          ).join('')
+          : '<span class="tag">Unclassified</span>'
+        }
+              </div>
+            </div>
+
+          </div>
+        </div>
+      `;
+    }
+
+    function renderGeneric(item, index = 0) {
+      const info = getGenericInfo(item, index);
+
+      return `
+        <div class="col-6 col-md-4 col-lg-3">
+          <div class="card-item"
+            onclick="openItem('${escapeHTML(currentCategory)}', '${encodeURIComponent(info.id)}')">
+
+            <div class="card-image">
+              ${info.image
+          ? `<img src="${escapeHTML(info.image)}"
+                    alt="${escapeHTML(info.name)}"
+                    loading="lazy">`
+          : `<span class="gold fw-bold text-center px-2">
+                    ${escapeHTML(info.name)}
+                  </span>`
+        }
+            </div>
+
+            <div class="card-content">
+              <div class="card-name">
+                ${escapeHTML(info.name)}
+              </div>
+
+              <div>
+                <span class="tag">
+                  ${escapeHTML(info.category || currentCategory)}
+                </span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      `;
+    }
+
+    function renderEmblemGroups(items, startIndex = 0) {
+      const groups = {};
+
+      items.forEach((item, idx) => {
+        const info = getGenericInfo(item, startIndex + idx);
+        const tier = String(info.tier);
+
+        if (!groups[tier]) groups[tier] = [];
+        groups[tier].push({ item, index: startIndex + idx });
+      });
+
+      return Object.keys(groups)
+        .sort((a, b) => {
+          if (a === 'Other') return 1;
+          if (b === 'Other') return -1;
+          return Number(a) - Number(b);
+        })
+        .map(tier => `
+          <div class="col-12">
+            <h3 class="section-title gold mt-3 mb-2">
+              ${tier === 'Other' ? 'OTHER EMBLEMS' : `TIER ${escapeHTML(tier)}`}
+            </h3>
+          </div>
+
+          ${groups[tier].map(({ item, index }) => renderGeneric(item, index)).join('')}
+        `)
+        .join('');
+    }
+
+    function renderPagination(totalPages) {
+      if (totalPages <= 1) {
+        pagination.innerHTML = '';
+        return;
+      }
+
+      let html = `
+        <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+          <button class="page-link"
+            onclick="changePage(${currentPage - 1})">
+            Previous
+          </button>
+        </li>
+      `;
+
+      for (let i = 1; i <= totalPages; i++) {
+        html += `
+          <li class="page-item ${currentPage === i ? 'active' : ''}">
+            <button class="page-link" onclick="changePage(${i})">
+              ${i}
+            </button>
+          </li>
+        `;
+      }
+
+      html += `
+        <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+          <button class="page-link"
+            onclick="changePage(${currentPage + 1})">
+            Next
+          </button>
+        </li>
+      `;
+
+      pagination.innerHTML = html;
+    }
+
+    function changePage(page) {
+      const totalPages = Math.ceil(getSortedData().length / PER_PAGE);
+
+      if (page < 1 || page > totalPages) return;
+
+      currentPage = page;
+      renderData();
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function openItem(category, id) {
+      if (!id || id === 'undefined') return;
+
+      window.location.href =
+        `view.html?category=${encodeURIComponent(category)}&id=${id}&page=${currentPage}`;
+    }
+
+    document.querySelectorAll('[data-category]').forEach(button => {
+      button.addEventListener('click', () => {
+        currentCategory = button.dataset.category;
+        currentPage = 1;
+        searchTerm = '';
+        selectedRole = '';
+        selectedEquipCategory = '';
+
+        document.getElementById('searchInput').value = '';
+        document.getElementById('roleFilter').value = '';
+        document.getElementById('equipCategoryFilter').value = '';
+
+        fetchData();
+      });
+    });
+
+    document.getElementById('searchInput').addEventListener('input', event => {
+      searchTerm = event.target.value.toLowerCase().trim();
+      currentPage = 1;
+      renderData();
+    });
+
+    document.getElementById('roleFilter').addEventListener('change', event => {
+      selectedRole = event.target.value;
+      currentPage = 1;
+      renderData();
+    });
+
+    document.getElementById('equipCategoryFilter').addEventListener('change', event => {
+      selectedEquipCategory = event.target.value;
+      currentPage = 1;
+      renderData();
+    });
+
+    document.getElementById('sortFilter').addEventListener('change', event => {
+      sortOrder = event.target.value;
+      currentPage = 1;
+      renderData();
+    });
+
+    fetchData();
+  </script>
+
+</body>
+
+</html>

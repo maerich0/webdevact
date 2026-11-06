@@ -1,0 +1,973 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Details | MLBB Dex</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+    :root {
+      --bg: #10131b;
+      --surface: #191e29;
+      --surface-light: #222a38;
+      --gold: #e5b85c;
+      --text: #f4f1e9;
+      --muted: #929baa;
+      --border: #30394a;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .navbar {
+      background: #171c27;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      color: var(--gold);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-decoration: none;
+    }
+
+    .gold {
+      color: var(--gold);
+    }
+
+    .hero-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .hero-image {
+      background: linear-gradient(145deg, #30394a, #171c27);
+      min-height: 350px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .hero-image img {
+      width: 100%;
+      max-height: 480px;
+      object-fit: contain;
+    }
+
+    .hero-image.item-icon img {
+      max-width: 180px;
+      max-height: 180px;
+      padding: 20px;
+    }
+
+    .hero-name {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: clamp(35px, 6vw, 55px);
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .detail-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 22px;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 25px;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    .tag {
+      display: inline-block;
+      background: #30394a;
+      color: var(--gold);
+      font-size: 12px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      margin: 3px;
+    }
+
+    .skill-card {
+      background: var(--surface-light);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px;
+      height: 100%;
+    }
+
+    .skill-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .skill-icon {
+      width: 65px;
+      height: 65px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid var(--gold);
+      background: #171c27;
+    }
+
+    .skill-name {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 21px;
+      font-weight: 700;
+      margin-bottom: 3px;
+    }
+
+    .skill-meta {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .back-btn {
+      color: var(--gold);
+      border: 1px solid var(--gold);
+    }
+
+    .back-btn:hover {
+      background: var(--gold);
+      color: #171a21;
+    }
+
+    .text-muted {
+      color: var(--muted) !important;
+    }
+
+    .stat-box {
+      background: var(--surface-light);
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+      height: 100%;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .stat-value {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .skill-video {
+      color: var(--gold);
+      font-size: 13px;
+      text-decoration: none;
+    }
+
+    .skill-video:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 576px) {
+      .hero-image {
+        min-height: 260px;
+      }
+
+      .detail-section {
+        padding: 16px;
+      }
+    }
+
+    .skill-description {
+      line-height: 1.7;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    .skill-description span {
+      font-weight: 500;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <div class="container py-2">
+      <a href="index.html" class="brand">
+        MLBB <span class="text-white">D.E.X.</span>
+      </a>
+    </div>
+  </nav>
+
+  <main class="container py-4">
+
+    <a href="index.html" id="backButton" class="btn back-btn mb-4">
+      ← Back to Heroes
+    </a>
+
+    <div id="content" class="text-center py-5 text-muted">
+      Loading information...
+    </div>
+
+  </main>
+
+  <script>
+    const API = 'https://arena.rone.dev/api';
+    const API_PAGE_SIZE = 100;
+
+    const params = new URLSearchParams(location.search);
+    const category = params.get('category') || 'heroes';
+    const itemId = params.get('id');
+    const page = params.get('page') || 1;
+
+    const categoryLabels = {
+      heroes: 'Heroes',
+      equipment: 'Equipment',
+      spells: 'Spells',
+      emblems: 'Emblems'
+    };
+
+    const categoryEndpoints = {
+      equipment: '/academy/equipment/expanded',
+      spells: '/academy/spells',
+      emblems: '/academy/emblems'
+    };
+
+    const content = document.getElementById('content');
+    const backBtn = document.getElementById('backButton');
+
+    backBtn.textContent = `← Back to ${categoryLabels[category] || 'Database'}`;
+    backBtn.href =
+      `index.html?category=${encodeURIComponent(category)}&page=${encodeURIComponent(page)}`;
+
+    function escapeHTML(value) {
+      return String(value ?? '').replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[char]);
+    }
+
+    function formatGameText(value) {
+      if (!value) return '';
+
+      const normalized = String(value)
+        .replace(/\\r\\n|\\n|\\r|\r\n|\r|\n/g, '<br>');
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(
+        normalized,
+        'text/html'
+      );
+
+      function renderNode(node) {
+        if (node.nodeType === Node.TEXT_NODE) {
+          return escapeHTML(node.textContent);
+        }
+
+        if (node.nodeType !== Node.ELEMENT_NODE) {
+          return '';
+        }
+
+        const tag = node.tagName.toLowerCase();
+        const children = Array.from(node.childNodes)
+          .map(renderNode)
+          .join('');
+
+        if (tag === 'font') {
+          const color = node.getAttribute('color') || '';
+
+          if (/^[0-9a-f]{3,8}$/i.test(color)) {
+            return `<span style="color:#${color}">${children}</span>`;
+          }
+
+          return children;
+        }
+
+        if (tag === 'br') return '<br>';
+        if (tag === 'p') return `<p class="mb-2">${children}</p>`;
+
+        if (tag === 'b' || tag === 'strong') {
+          return `<strong>${children}</strong>`;
+        }
+
+        if (tag === 'i' || tag === 'em') {
+          return `<em>${children}</em>`;
+        }
+
+        return children;
+      }
+
+      return Array.from(doc.body.childNodes)
+        .map(renderNode)
+        .join('');
+    }
+
+    function parseEmblemValues(rawValues) {
+      if (!rawValues) return [];
+
+      if (Array.isArray(rawValues)) {
+        return rawValues.map(v => String(v).trim()).filter(Boolean);
+      }
+
+      if (typeof rawValues === 'object') {
+        return Object.values(rawValues).map(v => String(v).trim()).filter(Boolean);
+      }
+
+      const str = String(rawValues).trim();
+      if (!str) return [];
+
+      try {
+        const parsed = JSON.parse(str);
+        if (Array.isArray(parsed)) {
+          return parsed.map(v => String(v).trim()).filter(Boolean);
+        }
+        if (parsed && typeof parsed === 'object') {
+          return Object.values(parsed).map(v => String(v).trim()).filter(Boolean);
+        }
+      } catch (_) {
+        // Fallback to delimiter splitting
+      }
+
+      return str
+        .split(/\r?\n|\\n|[|;]/)
+        .map(v => v.trim())
+        .filter(Boolean);
+    }
+
+    function interpolateEmblemText(text, values) {
+      if (!text) return '';
+      let result = String(text);
+
+      if (values.length) {
+        result = result.replace(/\{(\d+)\}/g, (match, idx) => {
+          const val = values[Number(idx)];
+          return val !== undefined ? `<font color="e5b85c">${val}</font>` : match;
+        });
+
+        let seqIdx = 0;
+        result = result.replace(/%s/g, () => {
+          const val = values[seqIdx++];
+          return val !== undefined ? `<font color="e5b85c">${val}</font>` : '%s';
+        });
+      }
+
+      return formatGameText(result);
+    }
+
+    function getCooldown(item, data) {
+      const directCd = item?.skillcd
+        ?? item?.['skillcd&cost']
+        ?? item?.cd
+        ?? data?.skillcd
+        ?? data?.['skillcd&cost']
+        ?? data?.cd;
+
+      if (directCd !== undefined && directCd !== null && String(directCd).trim() !== '' && String(directCd).trim() !== '0') {
+        const cdStr = String(directCd).trim();
+        return /s|sec|cd/i.test(cdStr) ? cdStr : `${cdStr}s`;
+      }
+
+      const combinedText = [
+        item?.skilldesc,
+        item?.skilldescemblem,
+        data?.skilldesc,
+        data?.skillshortdesc
+      ].filter(Boolean).join(' ').replace(/<[^>]*>/g, ' ');
+
+      const match = combinedText.match(/(?:cooldown|cd)\s*:?\s*(\d+(?:\.\d+)?)\s*(?:s|sec|seconds)?/i);
+      if (match) {
+        return `${match[1]}s`;
+      }
+
+      return '';
+    }
+
+    function capitalizeLabel(value) {
+      if (!value) return '';
+
+      return String(value)
+        .toLowerCase()
+        .replace(/\b\w/g, char => char.toUpperCase());
+    }
+
+    function getTags(items) {
+      if (!Array.isArray(items)) return [];
+
+      return items.map(item => {
+        if (typeof item === 'string') return item;
+
+        return capitalizeLabel(
+          item?.data?.sort_title ||
+          item?.data?.road_sort_title ||
+          item?.sort_title ||
+          item?.name ||
+          item
+        );
+      }).filter(Boolean);
+    }
+
+    function getSkills(hero) {
+      const skillSets = hero?.heroskilllist || [];
+
+      if (!Array.isArray(skillSets)) return [];
+
+      return skillSets.flatMap(set =>
+        Array.isArray(set?.skilllist)
+          ? set.skilllist
+          : []
+      );
+    }
+
+    async function fetchAll(endpoint) {
+      let records = [];
+      let pageIdx = 1;
+      let total = Infinity;
+
+      while (records.length < total) {
+        const url = new URL(API + endpoint);
+
+        url.searchParams.set('size', API_PAGE_SIZE);
+        url.searchParams.set('index', pageIdx);
+        url.searchParams.set('lang', 'en');
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+          throw new Error(`Unable to retrieve data (${response.status}).`);
+        }
+
+        const result = await response.json();
+
+        if (result.code !== undefined && result.code !== 0) {
+          throw new Error(result.message || 'API returned an error.');
+        }
+
+        const pageRecords = result?.data?.records || result?.data?.list || [];
+
+        if (pageIdx === 1) {
+          total = result?.data?.total ?? pageRecords.length;
+        }
+
+        if (!pageRecords.length) break;
+
+        records.push(...pageRecords);
+
+        if (pageRecords.length < API_PAGE_SIZE) break;
+
+        pageIdx++;
+      }
+
+      return records;
+    }
+
+    async function loadDetails() {
+      if (!itemId) {
+        content.innerHTML =
+          '<h4 class="gold">No item selected.</h4>';
+        return;
+      }
+
+      try {
+        const identifier = decodeURIComponent(itemId);
+
+        if (category === 'heroes') {
+          const url = new URL(
+            `${API}/heroes/${encodeURIComponent(identifier)}`
+          );
+
+          url.searchParams.set('lang', 'en');
+
+          const response = await fetch(url);
+
+          if (!response.ok) {
+            throw new Error(`Unable to retrieve hero (${response.status}).`);
+          }
+
+          const result = await response.json();
+
+          if (result.code !== undefined && result.code !== 0) {
+            throw new Error(result.message || 'API returned an error.');
+          }
+
+          const record = result?.data?.records?.[0];
+
+          if (!record) {
+            throw new Error('Hero information was not found.');
+          }
+
+          const hero = record?.data?.hero?.data;
+
+          if (!hero) {
+            throw new Error('Invalid hero information returned by API.');
+          }
+
+          document.title = `${hero.name || 'Hero'} | MLBB Dex`;
+          renderHero(record, hero);
+          return;
+        }
+
+        const endpoint = categoryEndpoints[category];
+
+        if (!endpoint) {
+          throw new Error('Unknown category.');
+        }
+
+        const records = await fetchAll(endpoint);
+        const found = findCategoryItem(records, identifier);
+
+        if (!found) {
+          throw new Error('Item information was not found.');
+        }
+
+        renderCategoryItem(found);
+
+      } catch (error) {
+        content.innerHTML = `
+          <h4 class="gold">Something went wrong.</h4>
+          <p class="text-muted">${escapeHTML(error.message)}</p>
+          <button class="btn back-btn" onclick="loadDetails()">
+            Try Again
+          </button>
+        `;
+      }
+    }
+
+    function findCategoryItem(records, identifier) {
+      return records.find((item, idx) => {
+        const data = item?.data || item;
+
+        if (category === 'equipment') {
+          const id = data?.equipid ?? item?.id ?? idx;
+          return String(id) === String(identifier);
+        }
+
+        if (category === 'spells') {
+          const spell = data?.__data || data;
+          const id = spell?.skillid ?? data?.skillid ?? item?.id ?? idx;
+          return String(id) === String(identifier);
+        }
+
+        if (category === 'emblems') {
+          const skill = data?.emblemskill?.data || data?.emblemskill || data?.__data || data;
+          const id = data?.giftid ?? skill?.skillid ?? data?.id ?? item?.id ?? idx;
+          return String(id) === String(identifier);
+        }
+
+        return String(data?.id ?? idx) === String(identifier);
+      });
+    }
+
+    function renderCategoryItem(record) {
+      const data = record?.data || record;
+
+      if (category === 'equipment') {
+        const name = data?.equipname || 'Unknown Equipment';
+        const image = data?.equipicon || '';
+        const type = data?.equiptypename || 'Equipment';
+        const price = data?.equipprice ?? data?.price ?? '';
+        const stats = data?.equiptips || '';
+        const passive = data?.equipskilldesc || '';
+
+        document.title = `${name} | MLBB Dex`;
+
+        content.innerHTML = `
+          <section class="hero-card mb-4 text-start">
+            <div class="row g-0 align-items-center">
+              <div class="col-12 col-md-5">
+                <div class="hero-image item-icon">
+                  ${image
+                    ? `<img src="${escapeHTML(image)}" alt="${escapeHTML(name)}">`
+                    : '<span class="text-muted">No equipment image available</span>'
+                  }
+                </div>
+              </div>
+
+              <div class="col-12 col-md-7 p-4 p-lg-5">
+                <p class="gold fw-bold small mb-2">EQUIPMENT PROFILE</p>
+                <h1 class="hero-name">${escapeHTML(name)}</h1>
+
+                <div class="mb-3">
+                  <span class="tag">${escapeHTML(type)}</span>
+                </div>
+
+                ${price !== ''
+                  ? `<div class="row g-2 mb-4">
+                      <div class="col-6 col-sm-4">
+                        <div class="stat-box">
+                          <div class="stat-label">Gold Cost</div>
+                          <div class="stat-value">${escapeHTML(price)}</div>
+                        </div>
+                      </div>
+                    </div>`
+                  : ''
+                }
+
+                <h5 class="section-title">ATTRIBUTES</h5>
+                <div class="text-muted skill-description mb-0">
+                  ${stats ? formatGameText(stats) : 'No base attributes listed.'}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="detail-section text-start">
+            <h2 class="section-title gold">UNIQUE PASSIVE & EFFECTS</h2>
+            <div class="skill-card">
+              <div class="text-muted small skill-description">
+                ${passive ? formatGameText(passive) : 'No additional passive effects available.'}
+              </div>
+            </div>
+          </section>
+        `;
+        return;
+      }
+
+      if (category === 'spells') {
+        const spell = data?.__data || data;
+        const name = spell?.skillname || data?.skillname || 'Unknown Spell';
+        const image = spell?.skillicon || data?.skillicon || '';
+        const cooldown = getCooldown(spell, data);
+        const unlockLevel = spell?.unlocklevel || data?.unlocklevel || '';
+        const description = spell?.skilldesc || data?.skilldesc || data?.skillshortdesc || '';
+        const extraDesc = spell?.skilldescemblem || data?.skilldescemblem || '';
+
+        document.title = `${name} | MLBB Dex`;
+
+        content.innerHTML = `
+          <section class="hero-card mb-4 text-start">
+            <div class="row g-0 align-items-center">
+              <div class="col-12 col-md-5">
+                <div class="hero-image item-icon">
+                  ${image
+                    ? `<img src="${escapeHTML(image)}" alt="${escapeHTML(name)}">`
+                    : '<span class="text-muted">No spell image available</span>'
+                  }
+                </div>
+              </div>
+
+              <div class="col-12 col-md-7 p-4 p-lg-5">
+                <p class="gold fw-bold small mb-2">BATTLE SPELL PROFILE</p>
+                <h1 class="hero-name">${escapeHTML(name)}</h1>
+
+                <div class="mb-3">
+                  <span class="tag">Battle Spell</span>
+                </div>
+
+                <div class="row g-2 mb-4">
+                  ${cooldown
+                    ? `<div class="col-6">
+                        <div class="stat-box">
+                          <div class="stat-label">Cooldown</div>
+                          <div class="stat-value">${escapeHTML(cooldown)}</div>
+                        </div>
+                      </div>`
+                    : ''
+                  }
+
+                  <div class="${cooldown ? 'col-6' : 'col-12 col-sm-6'}">
+                    <div class="stat-box">
+                      <div class="stat-label">Unlock Level</div>
+                      <div class="stat-value">${escapeHTML(unlockLevel || 'All Levels')}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <h5 class="section-title">SPELL DESCRIPTION</h5>
+                <div class="text-muted skill-description mb-0">
+                  ${description ? formatGameText(description) : 'No description available.'}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          ${extraDesc && extraDesc !== description
+            ? `<section class="detail-section text-start">
+                <h2 class="section-title gold">ADDITIONAL DETAILS</h2>
+                <div class="skill-card">
+                  <div class="text-muted small skill-description">
+                    ${formatGameText(extraDesc)}
+                  </div>
+                </div>
+              </section>`
+            : ''
+          }
+        `;
+        return;
+      }
+
+      if (category === 'emblems') {
+        const skill = data?.emblemskill?.data || data?.emblemskill || data?.__data || data;
+        const name = skill?.skillname || data?.skillname || data?.name || 'Unknown Emblem Talent';
+        const image = skill?.skillicon || data?.skillicon || data?.icon || '';
+        const tier = data?.gifttiers ?? skill?.gifttiers ?? 'N/A';
+        const giftId = data?.giftid ?? skill?.skillid ?? 'N/A';
+        const rawDescription = skill?.skilldesc || skill?.skilldescemblem || data?.skilldesc || data?.skilldescemblem || '';
+        const rawValues = skill?.numdescribe ?? data?.numdescribe ?? '';
+        const cooldown = getCooldown(skill, data);
+
+        const parsedValues = parseEmblemValues(rawValues);
+        const formattedDescription = interpolateEmblemText(rawDescription, parsedValues);
+
+        document.title = `${name} | MLBB Dex`;
+
+        content.innerHTML = `
+          <section class="hero-card mb-4 text-start">
+            <div class="row g-0 align-items-center">
+              <div class="col-12 col-md-5">
+                <div class="hero-image item-icon">
+                  ${image
+                    ? `<img src="${escapeHTML(image)}" alt="${escapeHTML(name)}">`
+                    : '<span class="text-muted">No emblem image available</span>'
+                  }
+                </div>
+              </div>
+
+              <div class="col-12 col-md-7 p-4 p-lg-5">
+                <p class="gold fw-bold small mb-2">EMBLEM TALENT PROFILE</p>
+                <h1 class="hero-name">${escapeHTML(name)}</h1>
+
+                <div class="mb-3">
+                  <span class="tag">${tier === 'N/A' ? 'Emblem Talent' : `Tier ${escapeHTML(tier)}`}</span>
+                </div>
+
+                <div class="row g-2 mb-4">
+                  <div class="col-6">
+                    <div class="stat-box">
+                      <div class="stat-label">Talent Tier</div>
+                      <div class="stat-value">${escapeHTML(tier)}</div>
+                    </div>
+                  </div>
+
+                  <div class="col-6">
+                    <div class="stat-box">
+                      <div class="stat-label">${cooldown ? 'Cooldown' : 'Talent ID'}</div>
+                      <div class="stat-value">${escapeHTML(cooldown || giftId)}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <h5 class="section-title">TALENT EFFECT</h5>
+                <div class="text-muted skill-description mb-0">
+                  ${formattedDescription || 'No emblem effect description available.'}
+                </div>
+              </div>
+            </div>
+          </section>
+        `;
+      }
+    }
+
+    function renderHero(record, hero) {
+      const data = record?.data || {};
+
+      const name = hero?.name || 'Unknown Hero';
+
+      const image = data?.painting
+        || data?.head_big
+        || data?.head
+        || hero?.squareheadbig
+        || hero?.squarehead
+        || '';
+
+      const description = hero?.story
+        || 'No hero background information available.';
+
+      const roles = getTags(hero?.sortid);
+      const specialties = Array.isArray(hero?.speciality)
+        ? hero.speciality
+        : [];
+
+      const lanes = getTags(hero?.roadsort);
+
+      const difficulty = hero?.difficulty ?? 'N/A';
+
+      const skills = getSkills(hero);
+
+      content.innerHTML = `
+
+        <!-- HERO PROFILE -->
+        <section class="hero-card mb-4 text-start">
+          <div class="row g-0 align-items-center">
+
+            <div class="col-12 col-md-5">
+              <div class="hero-image">
+                ${image
+          ? `<img src="${escapeHTML(image)}"
+                      alt="${escapeHTML(name)}">`
+          : '<span class="text-muted">No hero image available</span>'
+        }
+              </div>
+            </div>
+
+            <div class="col-12 col-md-7 p-4 p-lg-5">
+
+              <p class="gold fw-bold small mb-2">HERO PROFILE</p>
+
+              <h1 class="hero-name">${escapeHTML(name)}</h1>
+
+              <div class="mb-3">
+                ${roles.map(role =>
+          `<span class="tag">${escapeHTML(role)}</span>`
+        ).join('')}
+
+                ${specialties.map(specialty =>
+          `<span class="tag">${escapeHTML(specialty)}</span>`
+        ).join('')}
+              </div>
+
+              <div class="row g-2 mb-4">
+
+                <div class="col-6">
+                  <div class="stat-box">
+                    <div class="stat-label">Difficulty</div>
+                    <div class="stat-value">
+                      ${escapeHTML(difficulty)}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-6">
+                  <div class="stat-box">
+                    <div class="stat-label">Lane</div>
+                    <div class="stat-value">
+                      ${escapeHTML(lanes.join(', ') || 'N/A')}
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <h5 class="section-title">ABOUT</h5>
+
+              <p class="text-muted mb-0">
+                ${escapeHTML(description)}
+              </p>
+
+            </div>
+
+          </div>
+        </section>
+
+        <!-- SKILLS -->
+        <section class="detail-section text-start">
+
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <h2 class="section-title gold mb-0">HERO SKILLS</h2>
+            <span class="text-muted small">
+              ${skills.length} skills
+            </span>
+          </div>
+
+          <div class="row g-3 mt-1" id="skillsContainer">
+
+            ${skills.length
+          ? skills.map(renderSkill).join('')
+          : `<div class="col-12 text-muted">
+                  No skill information available.
+                </div>`
+        }
+
+          </div>
+
+        </section>
+
+      `;
+    }
+
+    function renderSkill(skill) {
+      const name = skill?.skillname || 'Unnamed Skill';
+      const image = skill?.skillicon || '';
+      const description = skill?.skilldesc || '';
+      const cooldown = skill?.['skillcd&cost'] || '';
+      const tags = Array.isArray(skill?.skilltag)
+        ? skill.skilltag
+        : [];
+
+      const video = skill?.skillvideo || '';
+
+      return `
+        <div class="col-12 col-md-6">
+
+          <div class="skill-card">
+
+            <div class="skill-header">
+
+              ${image
+          ? `<img class="skill-icon"
+                    src="${escapeHTML(image)}"
+                    alt="${escapeHTML(name)}"
+                    loading="lazy">`
+          : ''
+        }
+
+              <div>
+                <h5 class="skill-name gold">
+                  ${escapeHTML(name)}
+                </h5>
+
+                <div class="skill-meta">
+                  ${cooldown
+          ? escapeHTML(cooldown)
+          : 'Hero Ability'
+        }
+                </div>
+              </div>
+
+            </div>
+
+            <div class="text-muted small skill-description">
+              ${formatGameText(description)}
+            </div>
+
+            <div class="mb-2">
+              ${tags.map(tag => `
+                <span class="tag">
+                  ${escapeHTML(tag?.tagname || '')}
+                </span>
+              `).join('')}
+            </div>
+
+            ${video && /^https?:\/\//i.test(video)
+          ? `<a class="skill-video"
+                  href="${escapeHTML(video)}"
+                  target="_blank"
+                  rel="noopener noreferrer">
+                  Watch Skill Video ↗
+                </a>`
+          : ''
+        }
+
+          </div>
+
+        </div>
+      `;
+    }
+
+    loadDetails();
+  </script>
+
+</body>
+
+</html>
